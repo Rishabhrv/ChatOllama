@@ -28,5 +28,5 @@ jobs:
           
           source /home/rishabhvyas/ChatOllama/venv/bin/activate
           pip install -r requirements.txt
-          sudo systemctl restart chat.service
+          sudo systemctl restart chat_app_ollama.service
           EOF
