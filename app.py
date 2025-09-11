@@ -52,19 +52,14 @@ def login_page():
 def chat_app():
     st.write("### 💬 Chat with Your Local Models")
     st.write(f"Welcome, {st.session_state['username']}!")
-    
-    # Logout button
-    if st.button("Logout"):
-        st.session_state["logged_in"] = False
-        st.session_state["messages"] = []
-        st.session_state.pop("username", None)
-        st.rerun()
 
     # Available models
     models = {
         "Phi-3 (3.8B)": "phi3:3.8b",
         "Mistral 7B": "mistral:7b",
         "LLaMA 3.1 (8B)": "llama3.1:8b",
+        "Gemma 3 (270M)": "gemma3:270m",
+        "Gemma 3 (1B)": "gemma3:1b",
         "Gemma 3 (4B)": "gemma3:4b",
     }
 
@@ -88,10 +83,19 @@ def chat_app():
         with st.chat_message(msg["role"]):
             st.markdown(msg["content"])
 
-    # If Gemma selected → allow image upload
-    uploaded_image = None
-    if st.session_state["selected_model"] == "gemma3:4b":
-        uploaded_image = st.file_uploader("Upload an image for Gemma", type=["png", "jpg", "jpeg"])
+    # Control buttons
+    col1, col2 = st.columns(2)
+    with col1:
+        if st.button("⏹ Stop Response"):
+            st.session_state["stop_generation"] = True
+    with col2:
+        if st.button("🧹 Clear Chat"):
+            st.session_state["messages"] = []
+            st.rerun()
+
+    # Stop flag
+    if "stop_generation" not in st.session_state:
+        st.session_state["stop_generation"] = False
 
     # Chat input
     if prompt := st.chat_input("Type your message..."):
@@ -110,20 +114,19 @@ def chat_app():
             # Prepare request payload
             payload = {"model": st.session_state["selected_model"], "messages": st.session_state["messages"]}
 
-            # If Gemma and image uploaded → include image
-            files = None
-            if st.session_state["selected_model"] == "gemma3:4b" and uploaded_image is not None:
-                files = {"image": uploaded_image.getvalue()}  # raw bytes
-
             response = requests.post(
                 OLLAMA_URL,
                 json=payload,
-                files=files,
                 stream=True,
             )
 
+            # Reset stop flag before streaming
+            st.session_state["stop_generation"] = False
+
             # Stream response with cursor effect
             for line in response.iter_lines():
+                if st.session_state["stop_generation"]:
+                    break
                 if line:
                     data = json.loads(line.decode("utf-8"))
                     if "message" in data and "content" in data["message"]:
@@ -138,8 +141,9 @@ def chat_app():
             reply_content = reply_content.strip() + f"\n\n⏱️ Response time: {elapsed_time} sec"
             reply_placeholder.markdown(reply_content)
 
-            # Save assistant reply
-            st.session_state["messages"].append({"role": "assistant", "content": reply_content})
+            # Save assistant reply (only if not interrupted)
+            if not st.session_state["stop_generation"]:
+                st.session_state["messages"].append({"role": "assistant", "content": reply_content})
 
 # Main app logic
 if "logged_in" not in st.session_state:
