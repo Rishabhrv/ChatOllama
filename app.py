@@ -63,7 +63,7 @@ def login_page():
 
 # Main chat app
 def chat_app():
-    st.write("### 💬 Chat with Your Local Models")
+    st.write("### 💬 Chat Without Limits!")
     st.write(f"Welcome, {st.session_state['username']}!")
 
     # Available models
@@ -71,6 +71,9 @@ def chat_app():
         "LLaMA 3.1 8B (Meta) - High-Performance": "llama3.1:8b",
         "Gemma 3 270M (Google) - Small, Fast": "gemma3:270m",
         "Gemma 3 1B (Google) - Medium, Balanced": "gemma3:1b",
+        "Smollm2 1.7B (Hugging Face) - Open, Efficient": "smollm2:1.7b",
+        "Qwen 2.5 7B (Alibaba) - Advance Coder": "qwen2.5-coder:7b",
+        "Qwen 2.5 3B (Alibaba) - Coder": "qwen2.5-coder:3b",
     }
 
     OLLAMA_URL = "http://localhost:11434/api/chat"
@@ -81,7 +84,8 @@ def chat_app():
 
     selected_model_name = st.selectbox(
         "Select Model", list(models.keys()), 
-        index=list(models.values()).index(st.session_state["selected_model"])
+        index=list(models.values()).index(st.session_state["selected_model"]),
+        label_visibility="collapsed"
     )
     st.session_state["selected_model"] = models[selected_model_name]
 
