@@ -6,6 +6,19 @@ import os
 
 st.set_page_config(page_title="Offline Chatbot", layout="centered")
 
+st.markdown("""
+    <style>
+            
+        /* Remove Streamlit's default top padding */
+        .main > div {
+            padding-top: 0px !important;
+        }
+        /* Ensure the first element has minimal spacing */
+        .block-container {
+            padding-top: 28px !important;  /* Small padding for breathing room */
+        }
+            """, unsafe_allow_html=True)
+
 # Function to check credentials
 def check_credentials(username, password):
     if not os.path.exists("users.txt"):
@@ -55,12 +68,9 @@ def chat_app():
 
     # Available models
     models = {
-        "Phi-3 (3.8B)": "phi3:3.8b",
-        "Mistral 7B": "mistral:7b",
-        "LLaMA 3.1 (8B)": "llama3.1:8b",
-        "Gemma 3 (270M)": "gemma3:270m",
-        "Gemma 3 (1B)": "gemma3:1b",
-        "Gemma 3 (4B)": "gemma3:4b",
+        "LLaMA 3.1 8B (Meta) - High-Performance": "llama3.1:8b",
+        "Gemma 3 270M (Google) - Small, Fast": "gemma3:270m",
+        "Gemma 3 1B (Google) - Medium, Balanced": "gemma3:1b",
     }
 
     OLLAMA_URL = "http://localhost:11434/api/chat"
