@@ -23,10 +23,12 @@ jobs:
           ssh -o StrictHostKeyChecking=no rishabhvyas@178.16.137.226 << 'EOF'
           cd /home/rishabhvyas/ChatOllama
           git fetch origin main
-          git reset --hard origin/main  # Ensure server matches GitHub repo
-          git clean -fd                # Remove untracked files/folders
+          git reset --hard origin/main
+          git clean -fd
           
-          source /home/rishabhvyas/ChatOllama/venv/bin/activate
+          python3 -m venv venv
+          source venv/bin/activate
           pip install -r requirements.txt
+          
           sudo systemctl restart chat_app_ollama.service
           EOF
