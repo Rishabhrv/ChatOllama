@@ -12,6 +12,7 @@ models = {
     "Phi-3 (3.8B)": "phi3:3.8b",
     "Mistral 7B": "mistral:7b",
     "LLaMA 3.1 (8B)": "llama3.1:8b",
+    "Gemma 3 (4B)": "gemma3:4b",
 }
 
 OLLAMA_URL = "http://localhost:11434/api/chat"
@@ -34,6 +35,11 @@ for msg in st.session_state["messages"]:
     with st.chat_message(msg["role"]):
         st.markdown(msg["content"])
 
+# If Gemma selected → allow image upload
+uploaded_image = None
+if st.session_state["selected_model"] == "gemma3:4b":
+    uploaded_image = st.file_uploader("Upload an image for Gemma", type=["png", "jpg", "jpeg"])
+
 # Chat input
 if prompt := st.chat_input("Type your message..."):
     st.session_state["messages"].append({"role": "user", "content": prompt})
@@ -48,9 +54,18 @@ if prompt := st.chat_input("Type your message..."):
         # Measure response time
         start_time = time.time()
 
+        # Prepare request payload
+        payload = {"model": st.session_state["selected_model"], "messages": st.session_state["messages"]}
+
+        # If Gemma and image uploaded → include image
+        files = None
+        if st.session_state["selected_model"] == "gemma3:4b" and uploaded_image is not None:
+            files = {"image": uploaded_image.getvalue()}  # raw bytes
+
         response = requests.post(
             OLLAMA_URL,
-            json={"model": st.session_state["selected_model"], "messages": st.session_state["messages"]},
+            json=payload,
+            files=files,
             stream=True,
         )
 
@@ -72,49 +87,3 @@ if prompt := st.chat_input("Type your message..."):
 
         # Save assistant reply
         st.session_state["messages"].append({"role": "assistant", "content": reply_content})
-
-
-# --- Benchmark Section ---
-st.write("---")
-st.write("### ⚡ Benchmark All Models")
-
-# Sample prompts for benchmarking
-prompts = [
-    "Explain why the sky is blue in simple terms.",
-    "If you flip a coin 10 times, what is the probability of getting at least 6 heads?",
-    "Write a short bedtime story about a robot and a cat.",
-    "Write a Python function to check if a number is prime.",
-]
-
-def query_model(model_id, prompt):
-    """Send prompt to a model and return output + elapsed time"""
-    payload = {"model": model_id, "messages": [{"role": "user", "content": prompt}]}
-    start_time = time.time()
-    response = requests.post(OLLAMA_URL, json=payload, stream=True)
-    output = ""
-    for line in response.iter_lines():
-        if line:
-            data = json.loads(line.decode("utf-8"))
-            if "message" in data and "content" in data["message"]:
-                output += data["message"]["content"]
-    elapsed_time = round(time.time() - start_time, 2)
-    return output.strip(), elapsed_time
-
-if st.button("Run Benchmark"):
-    results = {}
-    with st.spinner("Benchmarking models... this may take a few minutes ⏳"):
-        for model_name, model_id in models.items():
-            st.write(f"#### 🚀 Testing {model_name}")
-            model_times = []
-            for prompt in prompts:
-                output, elapsed = query_model(model_id, prompt)
-                st.markdown(f"**Prompt:** {prompt}")
-                st.markdown(f"⏱️ Time: `{elapsed} sec`")
-                st.markdown(f"**Answer:**\n{output}\n")
-                model_times.append(elapsed)
-            avg_time = round(sum(model_times) / len(model_times), 2)
-            results[model_name] = avg_time
-
-    st.write("### 📊 Benchmark Summary")
-    for model_name, avg_time in results.items():
-        st.write(f"- {model_name}: **{avg_time} sec** average per response")
