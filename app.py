@@ -3,7 +3,7 @@ import requests
 
 st.set_page_config(page_title="Phi-3 Chat", layout="centered")
 
-st.write("### 💬 Chat with Phi-3 (3.8B)")
+st.write("### 💬 Chat with Phi-3 Offline (3.8B)")
 
 if "messages" not in st.session_state:
     st.session_state["messages"] = []
