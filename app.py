@@ -1,6 +1,7 @@
 import streamlit as st
 import requests
 import json
+import time
 
 st.set_page_config(page_title="Offline Chatbot", layout="centered")
 
@@ -42,6 +43,9 @@ if prompt := st.chat_input("Type your message..."):
         reply_placeholder = st.empty()
         reply_content = ""
 
+        # Measure response time
+        start_time = time.time()
+
         response = requests.post(
             "http://localhost:11434/api/chat",
             json={"model": st.session_state["selected_model"], "messages": st.session_state["messages"]},
@@ -55,7 +59,16 @@ if prompt := st.chat_input("Type your message..."):
                 if "message" in data and "content" in data["message"]:
                     token = data["message"]["content"]
                     reply_content += token
-                    reply_placeholder.markdown(reply_content)  # update live
+                    reply_placeholder.markdown(reply_content)
+
+        end_time = time.time()
+        elapsed_time = round(end_time - start_time, 2)
+
+        # Append black dot & response time
+        reply_content = reply_content.strip() + " ▪️"
+        reply_content += f"\n\n⏱️ Response time: {elapsed_time} sec"
+
+        reply_placeholder.markdown(reply_content)
 
         # Save assistant reply
         st.session_state["messages"].append({"role": "assistant", "content": reply_content})
