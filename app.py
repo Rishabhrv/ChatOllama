@@ -71,6 +71,8 @@ def chat_app():
         "LLaMA 3.1 8B (Meta) - High-Performance": "llama3.1:8b",
         "Gemma 3 270M (Google) - Small, Fast": "gemma3:270m",
         "Gemma 3 1B (Google) - Medium, Balanced": "gemma3:1b",
+        "LLaMA 2 7B (Meta) - Uncensored": "llama2-uncensored:7b",
+        "Dolphine 7B (Mistral) - Uncensored": "dolphin-mistral:7b",
         "Smollm2 1.7B (Hugging Face) - Open, Efficient": "smollm2:1.7b",
         "Qwen 2.5 7B (Alibaba) - Advance Coder": "qwen2.5-coder:7b",
         "Qwen 2.5 3B (Alibaba) - Coder": "qwen2.5-coder:3b",
