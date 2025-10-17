@@ -65,6 +65,7 @@ def login_page():
 def chat_app():
     st.write("### 💬 Chat Without Limits!")
     st.write(f"Welcome, {st.session_state['username']}!")
+    st.error("Some error occor")
 
     # Available models
     models = {
