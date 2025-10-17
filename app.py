@@ -63,7 +63,7 @@ def login_page():
 
 # Main chat app
 def chat_app():
-    st.write("### 💬 Chat Without Limits!")
+    st.write("### 💬 Chat Without Limits !")
     st.write(f"Welcome, {st.session_state['username']}!")
 
     # Available models
