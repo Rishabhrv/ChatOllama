@@ -65,6 +65,7 @@ def login_page():
 def chat_app():
     st.write("### 💬 Chat Without Limits!")
     st.write(f"Welcome, {st.session_state['username']}!")
+    st.error("Some error occur")
 
     # Available models
     models = {
@@ -73,9 +74,6 @@ def chat_app():
         "Gemma 3 1B (Google) - Medium, Balanced": "gemma3:1b",
         "LLaMA 2 7B (Meta) - Uncensored": "llama2-uncensored:7b",
         "Dolphine 7B (Mistral) - Uncensored": "dolphin-mistral:7b",
-        "Smollm2 1.7B (Hugging Face) - Open, Efficient": "smollm2:1.7b",
-        "Qwen 2.5 7B (Alibaba) - Advance Coder": "qwen2.5-coder:7b",
-        "Qwen 2.5 3B (Alibaba) - Coder": "qwen2.5-coder:3b",
     }
 
     OLLAMA_URL = "http://localhost:11434/api/chat"
