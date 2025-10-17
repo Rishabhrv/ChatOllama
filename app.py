@@ -78,9 +78,6 @@ def chat_app():
 
     OLLAMA_URL = "http://localhost:11434/api/chat"
 
-    # Model selector
-    if "selected_model" not in st.session_state:
-        st.session_state["selected_model"] = list(models.values())[0]
 
     selected_model_name = st.selectbox(
         "Select Model", list(models.keys()), 
