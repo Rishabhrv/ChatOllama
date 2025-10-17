@@ -61,9 +61,6 @@ def login_page():
             else:
                 st.error("Please enter both username and password.")
 
-
-st.error("Injected Some error!")
-
 # Main chat app
 def chat_app():
     st.write("### 💬 Chat Without Limits !")
